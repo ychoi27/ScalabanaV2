@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
+import choe.scalabanav2.environment.ConfReader
 
 import scala.concurrent.Future
 
@@ -15,34 +16,21 @@ object Main extends App {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  val host = "localhost"
-  val port = 9000
-  val serverSource = Http().bind(interface = host, port = port)
-//
-  val requestHandler: HttpRequest => HttpResponse = {
-    case HttpRequest(GET, Uri.Path("/"), _, _, _) =>
-      HttpResponse(entity = HttpEntity(
-        ContentTypes.`text/html(UTF-8)`,
-        "<html><body>Hello world!</body></html>"))
+  val defaultPort = 8080
+  val confReader = ConfReader.LiveImpl
 
-    case HttpRequest(GET, Uri.Path("/ping"), _, _, _) =>
-      HttpResponse(entity = "PONG!")
 
-    case HttpRequest(GET, Uri.Path("/crash"), _, _, _) =>
-      sys.error("BOOM!")
+  val bindingFuture: Future[Http.ServerBinding] = {
+    for {
+      port <- confReader.get.map(c => c.scalabana.http.flatMap(_.port)).map(_.getOrElse(defaultPort))
+      serverSource = Http().bind(interface = "0.0.0.0", port = port)
+      server <- serverSource.to(Sink.foreach { connection =>
+        println("Accepted new connection from " + connection.remoteAddress)
 
-    case r: HttpRequest =>
-      r.discardEntityBytes() // important to drain incoming HTTP Entity stream
-      HttpResponse(404, entity = "Unknown resource!")
+        connection handleWithSyncHandler ScalabanaRoutes.requestHandler
+        // this is equivalent to
+        // connection handleWith { Flow[HttpRequest] map requestHandler }
+      }).run()
+    } yield server
   }
-
-  val bindingFuture: Future[Http.ServerBinding] =
-    serverSource.to(Sink.foreach { connection =>
-      println("Accepted new connection from " + connection.remoteAddress)
-
-      connection handleWithSyncHandler requestHandler
-      // this is equivalent to
-      // connection handleWith { Flow[HttpRequest] map requestHandler }
-    }).run()
-
 }

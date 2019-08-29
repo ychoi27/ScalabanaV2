@@ -1,23 +1,35 @@
 package choe.scalabanav2
 
-//import akka.actor.{ ActorRef, ActorSystem }
-////import akka.event.Logging
-////
-////import scala.concurrent.duration._
-////import akka.http.scaladsl.server.Directives._
-////import akka.http.scaladsl.model.StatusCodes
-////import akka.http.scaladsl.server.Route
-////import akka.http.scaladsl.server.directives.MethodDirectives.delete
-////import akka.http.scaladsl.server.directives.MethodDirectives.get
-////import akka.http.scaladsl.server.directives.MethodDirectives.post
-////import akka.http.scaladsl.server.directives.RouteDirectives.complete
-////import akka.http.scaladsl.server.directives.PathDirectives.path
-////
-////import scala.concurrent.Future
-////import com.example.UserRegistryActor._
-////import akka.pattern.ask
-////import akka.util.Timeout
+import akka.http.scaladsl.model.HttpMethods.GET
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpRequest, HttpResponse, Uri}
+import akka.stream.ActorMaterializer
+import choe.scalabanav2.Main.system
 
 object ScalabanaRoutes {
+  implicit val materializer = ActorMaterializer()
+  implicit val executionContext = system.dispatcher
+
+  def requestHandler: HttpRequest => HttpResponse = {
+    case HttpRequest(GET, Uri.Path("/scalabana"), _, _, _) =>
+      HttpResponse(entity = HttpEntity(
+        ContentTypes.`text/html(UTF-8)`,
+        "<html><body>Hello world!</body></html>"))
+
+    case HttpRequest(GET, Uri.Path("/scalabana/json"), _, _, _) =>
+      HttpResponse(entity = "PONG!")
+
+    case HttpRequest(GET, Uri.Path("/scalabana/search"), _, _, _) =>
+      sys.error("search!")
+
+    case HttpRequest(GET, Uri.Path("/scalabana/insert"), _, _, _) =>
+      sys.error("insert!")
+
+    case HttpRequest(GET, Uri.Path("/scalabana/delete"), _, _, _) =>
+      sys.error("delete!")
+
+    case r: HttpRequest =>
+      r.discardEntityBytes() // important to drain incoming HTTP Entity stream
+      HttpResponse(404, entity = "Unknown resource!")
+  }
 
 }
