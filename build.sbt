@@ -2,10 +2,11 @@ name := "scalabanav2"
 
 version := "0.1"
 
-scalaVersion := "2.13.0"
+//scalaVersion := "2.13.0"
 
 lazy val akkaHttpVersion = "10.1.9"
 lazy val akkaVersion    = "2.5.25"
+val CirceConfigVersion = "0.6.1"
 
 lazy val root = (project in file(".")).
   settings(
@@ -13,12 +14,13 @@ lazy val root = (project in file(".")).
       organization    := "com.example",
       scalaVersion    := "2.12.8"
     )),
-    name := "akka-http-quickstart-scala",
+    name := "scalabanav2",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-xml"        % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-stream"          % akkaVersion,
+      "io.circe"       %% "circe-config"            % CirceConfigVersion,
 
       "com.typesafe.akka" %% "akka-http-testkit"    % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-testkit"         % akkaVersion     % Test,
@@ -35,7 +37,7 @@ lazy val root = (project in file(".")).
 //val LogbackVersion     = "1.2.3"
 //val TypesafeVersion    = "1.2.1"
 //val ZioVersion         = "1.0-RC5"
-//val CirceConfigVersion = "0.6.1"
+
 //val elastic4sVersion   = "6.3.7"
 //
 //lazy val root = (project in file("."))
@@ -55,7 +57,7 @@ lazy val root = (project in file(".")).
 //      "org.scalamock"  %% "scalamock"               % "4.1.0" % "test",
 //      "org.scalatest"  %% "scalatest"               % "3.0.5" % "test",
 //      "ch.qos.logback" % "logback-classic"          % LogbackVersion,
-//      "io.circe"       %% "circe-config"            % CirceConfigVersion,
+
 //      "org.scalaz"     %% "scalaz-zio"              % ZioVersion,
 //      "org.scalaz"     %% "scalaz-zio-interop-cats" % ZioVersion,
 //      "jp.ne.opt"      %% "chronoscala"             % "0.3.1"
