@@ -6,7 +6,8 @@ version := "0.1"
 
 lazy val akkaHttpVersion = "10.1.9"
 lazy val akkaVersion    = "2.5.25"
-val CirceConfigVersion = "0.6.1"
+lazy val CirceVersion       = "0.11.1"
+lazy val CirceConfigVersion = "0.6.1"
 
 lazy val root = (project in file(".")).
   settings(
@@ -21,6 +22,10 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka" %% "akka-http-xml"        % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-stream"          % akkaVersion,
       "io.circe"       %% "circe-config"            % CirceConfigVersion,
+      "io.circe"       %% "circe-generic"           % CirceVersion,
+      "io.circe"       %% "circe-parser"            % CirceVersion,
+      "org.typelevel" %% "cats-core" % "1.1.0",
+      "org.typelevel" %% "cats-kernel" % "1.2.0",
 
       "com.typesafe.akka" %% "akka-http-testkit"    % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-testkit"         % akkaVersion     % Test,
